@@ -7,3 +7,9 @@ To run Objection Detection model:
 5. Extract here
 6. Add in the final.py file to the /build/aarch64/bin
 7. Run it
+
+
+This repo also contains a server.py file for the results receiver laptop.
+1. Run ifconfig to find out the local ip address starting with 10.169......
+2. Run netstat -tulpn | grep LISTEN to check for open ports
+3. Then change the corresponding ip address and port no at both client and server side

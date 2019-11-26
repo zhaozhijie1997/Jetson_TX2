@@ -1,6 +1,14 @@
-# run this on the ros side
+#!/usr/bin/env python
 
+import rospy
 import socket
+import sys
+from std_msgs.msg import Float64MultiArray
+from std_msgs.msg import MultiArrayDimension
+
+rospy.init_node('tx2_communication_server', anonymous=True)
+pub = rospy.Publisher('detection_results', Float64MultiArray, queue_size=1)
+
 
 
 class Server():
@@ -16,39 +24,34 @@ class Server():
         print('connected')
         while True:
             data = self.connection.recv(1024)
+            #i = 0
             if data:
                 msg = data.decode("utf-8")
                 print(msg)
-                split_msg = msg.replace('--',':')
 
+                split_msg = msg.replace('--',':')
                 split_msg = split_msg.split(":")
                 class_ID = split_msg[2]
+
                 print(int(class_ID))
                 accuracy = split_msg[4]
-                print(float(accuracy))
                 left = split_msg[6]
-                print(float(left))
                 top = split_msg[8]
-                print(float(top))
                 right = split_msg[10]
-                print(float(right))
                 bottom = split_msg[12]
-                print(float(bottom))
                 width = split_msg[14]
-                print(float(width))
                 height = split_msg[16]
-                print(float(height))
                 center = split_msg[20]
                 msg = center.replace('(','')
                 msg = msg.replace(')','')
-                msg = msg.replace('(','')
                 msg = msg.replace(' ','')
                 msg = msg.split(',')
-                a = [float(msg[0]),float(msg[1])]
-                print(a)
+ 
+                each = Float64MultiArray() 
 
-                #center_(split_msg)coord = center.
-                #print
+                each.data = (float(class_ID),float(accuracy),float(width),float(height),float(msg[0]),float(msg[1]))
+
+                pub.publish(each)
 
 
     def stop(self):
@@ -61,6 +64,6 @@ if __name__ == '__main__':
 
 
     ip_addr = '192.168.1.212'
-    port_num = 8888
+    port_num = 8889
     my_server = Server(ip_addr, port_num)
     my_server.run()
